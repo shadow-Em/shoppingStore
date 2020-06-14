@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Manager</title>
+<meta http-equiv="Access-Control-Allow-Origin" content="*">
+<title>main</title>
+<link href="../css/main.css" rel="stylesheet"/>
+<script src="../js/vue.min.js"></script>
+<!-- 引入样式 -->
+<link rel="stylesheet" href="../element-ui/index.css">
+<!-- 引入组件库 -->
+<script src="../element-ui/index.js"></script>
+<script src="../element-ui/axios.min.js"></script>
+<script
+  src="https://code.jquery.com/jquery-3.4.1.min.js"
+  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+  crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="main">
+    <!-- 标题 -->
+    <div class="titlePart">
+        <h1>Welcome!Manager</h1>
+    </div>
+    <!-- 导航栏 -->
+    <div class="navigate">    
+        <el-menu :default-active="barIndex" class="el-menu-demo" mode="horizontal"
+        @select="handleSelect" background-color="#545c64" text-color="#fff" active-text-color="#ffd04b">
+            <el-menu-item index="1">登录记录</el-menu-item>
+            <el-menu-item index="2">个人信息</el-menu-item>
+            
+            <el-menu-item index="4">销售统计</el-menu-item>
+            <el-menu-item index="5">销售人员</el-menu-item>
+            <el-menu-item index="7">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+            </el-menu-item>
+            <el-menu-item index="2"><div >欢迎您！{{user.uName}}</div></el-menu-item>
+            <el-menu-item index="6">退出登录</el-menu-item>
+        </el-menu>
+    </div>
+    <!-- 主页 -->
+    <div v-if = 'barIndex==7'></div>
+    <!-- 登录记录 -->
+    <div v-if = 'barIndex==1' class="part">
+        <h2 class="shoppingCarh2 browsedh2">登录记录</h2>
+        <div class="browsedPart">
+        <el-table :data="logInfo" border style="width: 100%" empty-text="暂无登录记录" lazy=true  highlight-current-row
+            max-height="530">
+            <el-table-column prop="lTime" label="时间" width="284"> </el-table-column> 
+            <el-table-column prop="uId" label="用户" width="283"></el-table-column>
+            <el-table-column prop="uDo" label="行为" width="283"></el-table-column>
+        </el-table>   
+        </div>
+    </div>
+    <!-- 销售人员 -->
+    <div v-if = 'barIndex==5' class="part">
+        <h2 class="shoppingCarh2 browsedh2">销售人员</h2>
+        <div class="browsedPart">
+        <el-table :data="sellerCard" border style="width: 100%" empty-text="暂无销售人员记录" lazy=true  highlight-current-row
+            max-height="530">
+            <el-table-column prop="uId" label="账号" width="220"> </el-table-column> 
+            <el-table-column prop="uName" label="用户名" width="210"></el-table-column>
+            <el-table-column prop="uPost" label="邮箱" width="220"></el-table-column>
+            <el-table-column prop="uMoney" label="余额" width="200"> </el-table-column>
+        </el-table>   
+        </div>
+    </div>
+    <!-- 个人信息 -->
+    <div v-if = 'barIndex==2' class="part">
+        <h2 style="color:#606266;padding-top:20px;padding-bottom:20px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;个人信息</h2>
+        <div id="userInfo">
+            <el-form ref="user" :model="user" label-width="80px">
+                <el-form-item label="账号">
+                    <el-input v-model="user.uId" placeholder="请输入账号" :disabled="true" ></el-input>
+                </el-form-item>
+                <el-form-item label="用户名">
+                    <el-input v-model="user.uName" placeholder="请输入用户名" ></el-input>
+                </el-form-item>
+                <el-form-item label="地址">
+                    <el-input v-model="user.uAddress" placeholder="请输入地址" ></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱">
+                    <el-input v-model="user.uPost" placeholder="请输入邮箱" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item label="密码">
+                    <el-input placeholder="请输入密码" v-model="user.uPwd" show-password ></el-input>
+                </el-form-item>
+                <el-form-item label="账户金额" >
+                    <el-input v-model="user.uMoney" placeholder="请输入金额" :disabled="true"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" v-on:click="daydream">提现</el-button>
+                    <el-button type="primary" v-on:click="changeUserInfo">修改</el-button>         
+                </el-form-item>
+            </el-form>
+        </div>
+    </div>
+    <!-- 销售统计 -->
+    <div v-if = 'barIndex==4' class="part">
+        <h2 class="shoppingCarh2 browsedh2">销售记录</h2>
+        <div class="browsedPart">
+        <el-table :data="goods" border style="width: 100%" empty-text="暂无销售记录" lazy=true  highlight-current-row
+        show-summary=true sum-text="合计" :summary-method="getSummaries" max-height="530">
+            <!-- <el-table-column type="expand">
+                <template slot-scope="props">
+                    <el-form label-position="left" inline class="demo-table-expand">
+                        <el-form-item label="商品编号">
+                        <span>{{ props.row.gNo }}</span>
+                        </el-form-item>
+                        <el-form-item label="商品简介">
+                        <span>{{ props.row.gIntroduce }}</span>
+                        </el-form-item>
+                        <el-form-item label="商品详情">
+                        <span>{{ props.row.gDetail }}</span>
+                        </el-form-item>
+                    </el-form>
+                </template>
+            </el-table-column> -->
+            <el-table-column prop="gName" label="商品名称" width="175"></el-table-column>
+            <el-table-column prop="gStatus" label="销售状态" width="195"></el-table-column>
+            <el-table-column prop="gMoney" label="售价/￥" width="160"> </el-table-column>
+            <el-table-column prop="gNum" label="销售数量/件" width="160"> </el-table-column>  
+            <el-table-column prop="gAllMoney" label="销售金额/￥" width="160"> </el-table-column> 
+        </el-table>   
+        </div>
+    </div>
+
+</div>
+<script>
+    var main = new Vue({
+        el:"#main",
+        data(){
+            return {
+                user:{
+                	uName:"",
+                },
+                barIndex:7,
+                goods:[],
+                allGoods:[],
+                goodsIndex:1,
+                logInfo:[],
+                sellerCard:[],
+                readMoreJug:false,
+                goodsInfo:{
+                    gNo:'',
+                    gName:'',
+                    gIntroduce:'',
+                    gMoney:'',
+                    gReserve:'',
+                    gUrl:'',
+                    gDetail:'',
+                    gParams:[],
+                    gUrl2:''
+                }
+            }
+        },
+        methods:{
+            handleSelect(key,keyPath){
+                var ctx = this
+                console.log(key)
+                //退出登录
+                if(key == 6){
+                    axios.get('/JavaWebExp/logout')
+                    .then(function (resp) {
+                        window.location.href='/JavaWebExp/index.html';
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });       
+                } 
+                if(key==1||key==2){
+                    ctx.checkTime()
+                }     
+                ctx.barIndex = key
+                //登录记录
+                if(ctx.barIndex==1){ 
+                    axios.get('/JavaWebExp/load-log-info')
+                    .then(function (resp) {
+                        //ctx.goods=[]
+                        console.log(resp.data);
+                        ctx.logInfo = resp.data
+                        
+                        //if(ctx.customerInfo[0].gNo==="")
+                            //ctx.customerInfo=[]
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                }
+                else if(ctx.barIndex==2){         
+                axios.get('/JavaWebExp/get-user-info')
+                .then(function (resp) {
+                    console.log(resp.data);
+                    ctx.user = resp.data                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                }); 
+                }
+                //销售人员信息
+                else if(ctx.barIndex==5){
+                	axios.get('/JavaWebExp/get-seller-info')
+                	.then(function(resp){
+                		//ctx.goods=[]
+                		console.log(resp.data);
+                		ctx.sellerCard=resp.data
+                		//if(ctx.sellerInfo[0].gNo==="")
+                			//ctx.sellerInfo=[]
+                	})
+                	.catch(function(error){
+                		console.log(error);
+                	});
+                }
+                else if(ctx.barIndex==4){
+                    axios.get('/JavaWebExp/get-user-info')
+                    .then(function (resp) {
+                        console.log(resp.data);
+                        ctx.user = resp.data                    
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    }); 
+                    axios.get('/JavaWebExp/load-all-brought')
+                    .then(function (resp) {
+                        console.log('exist:',resp.data[0].exist);
+                        if(resp.data[0].exist == 0){
+                            ctx.$message({
+                            message:'登录超时!请重新登录！',
+                            type:'error'
+                            }) 
+                            setTimeout(function(){
+                                window.location.href='/JavaWebExp/index.html';
+                            },500)
+                            return false                   
+                        } 
+                        ctx.customerInfo=[]
+                        ctx.goods = resp.data
+                        if(ctx.goods[0].gNo==="")
+                            ctx.goods=[]
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                }
+                
+            },
+             //登录超时检测
+            checkTime(){
+                var ctx= this
+                axios.get('/JavaWebExp/check-time')
+                .then(function (resp) {
+                    console.log('exist:',resp.data.exist);
+                    if(resp.data.exist == 0){
+                        ctx.$message({
+                        message:'登录超时!请重新登录！',
+                        type:'error'
+                        }) 
+                        setTimeout(function(){
+                            window.location.href='/JavaWebExp/index.html';
+                        },500)
+                        return false                   
+                    } 
+                    return true       
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
+            changeUserInfo(){
+                var ctx = this
+                var params = new URLSearchParams({
+                        uNo: ctx.user.uNo,       
+                        uPwd: ctx.user.uPwd,
+                        uPost:ctx.user.uPost,
+                        uAddress:ctx.user.uAddress,
+                        uMoney:ctx.user.uMoney,
+                        uName:ctx.user.uName
+                    })
+                axios.post('/JavaWebExp/change-user-info', params)
+                .then(function (resp) {
+                    console.log(resp)
+                    //登录超时
+                    if(resp.data.exist==0){          
+                        ctx.$message({
+                            message:'登录超时！请重新登录',
+                            type:'error'
+                        })
+                        setTimeout(function(){
+                            window.location.href='/JavaWebExp/index.html';   
+                        },500) 
+                            
+                    }
+                    else{
+                        ctx.$message({
+                            message:'修改成功！',
+                            type:'success'
+                        })  
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+                },
+            daydream(){
+                var ctx = this
+                ctx.$alert('不能提现了啦~',
+                                 'Daydream', {
+                                confirmButtonText: '确定',
+                                });
+            },
+            getSummaries(param) {
+                const { columns, data } = param;
+                const sums = [];
+                columns.forEach((column, index) => {
+                if (index === 0) {
+                    sums[index] = '合计';
+                    return;
+                }
+                else if(index==4)
+                {
+                    const values = data.map(item => Number(item[column.property]));
+                    sums[index] = values.reduce((prev, curr) => {
+                    const value = Number(curr);
+                    if (!isNaN(value)) {
+                        return prev + curr;
+                    } else {
+                        return prev;
+                    }
+                    }, 0);  
+                }
+                
+                });
+                return sums;
+            },
+            
+        },
+        mounted: function() {   
+            	var ctx = this         
+                axios.get('/JavaWebExp/get-user-info')
+                .then(function (resp) {
+                    console.log(resp.data);
+                    ctx.user = resp.data                    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });                             
+            }, 
+                  
+    });
+
+</script>
+</body>
+</html>
